@@ -6,7 +6,7 @@ import com.katalon.utils.Logger;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 import hudson.remoting.Callable;
 import org.jenkinsci.remoting.RoleChecker;
 
@@ -19,19 +19,19 @@ public class ExecuteKatalonStudioHelper {
             FilePath workspace,
             EnvVars buildEnvironment,
             Launcher launcher,
-            BuildListener buildListener,
+            TaskListener taskListener,
             String version,
             String location,
             String executeArgs,
             String x11Display,
             String xvfbConfiguration) {
-        Logger logger = new JenkinsLogger(buildListener);
+        Logger logger = new JenkinsLogger(taskListener);
         try {
             return launcher.getChannel().call(new Callable<Boolean, Exception>() {
                 @Override
                 public Boolean call() throws Exception {
 
-                    Logger logger = new JenkinsLogger(buildListener);
+                    Logger logger = new JenkinsLogger(taskListener);
 
                     if (workspace != null) {
                         String workspaceLocation = workspace.getRemote();

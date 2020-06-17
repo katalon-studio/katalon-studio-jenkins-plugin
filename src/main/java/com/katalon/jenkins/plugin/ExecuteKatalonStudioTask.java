@@ -5,18 +5,19 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
+import hudson.model.*;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class ExecuteKatalonStudioTask extends Builder {
+public class ExecuteKatalonStudioTask extends Builder implements SimpleBuildStep {
 
     private String version;
 
@@ -85,14 +86,27 @@ public class ExecuteKatalonStudioTask extends Builder {
     @Override
     public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
         throws InterruptedException, IOException {
-
         FilePath workspace = abstractBuild.getWorkspace();
         EnvVars buildEnvironment = abstractBuild.getEnvironment(buildListener);
+        return doPerform(workspace, buildEnvironment, launcher, buildListener);
+    }
+
+    @Override
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher,
+                        @Nonnull TaskListener taskListener)
+        throws InterruptedException, IOException {
+        EnvVars buildEnvironment = run.getEnvironment(taskListener);
+        doPerform(filePath, buildEnvironment, launcher, taskListener);
+    }
+
+    private boolean doPerform(FilePath workspace, EnvVars buildEnvironment,
+                              Launcher launcher, TaskListener taskListener)
+        throws IOException, InterruptedException {
         return ExecuteKatalonStudioHelper.executeKatalon(
             workspace,
             buildEnvironment,
             launcher,
-            buildListener,
+            taskListener,
             version,
             location,
             executeArgs,
@@ -100,6 +114,7 @@ public class ExecuteKatalonStudioTask extends Builder {
             xvfbConfiguration);
     }
 
+    @Symbol("executeKatalon")
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Builder> { // Publisher because Notifiers are a type of publisher
         @Override

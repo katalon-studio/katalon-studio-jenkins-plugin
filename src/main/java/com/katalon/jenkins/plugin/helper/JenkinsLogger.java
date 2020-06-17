@@ -1,21 +1,21 @@
 package com.katalon.jenkins.plugin.helper;
 
 import com.katalon.utils.Logger;
-import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 
 import java.time.LocalDateTime;
 
 public class JenkinsLogger implements Logger {
 
-    private BuildListener buildListener;
+    private TaskListener taskListener;
 
-    public JenkinsLogger(BuildListener buildListener) {
-        this.buildListener = buildListener;
+    public JenkinsLogger(TaskListener taskListener) {
+        this.taskListener = taskListener;
     }
 
     @Override
     public void info(String message) {
         String timeNow = LocalDateTime.now().toString();
-        buildListener.getLogger().println('[' + timeNow + "] " + message);
+        taskListener.getLogger().println('[' + timeNow + "] " + message);
     }
 }
