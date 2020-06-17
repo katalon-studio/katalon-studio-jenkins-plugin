@@ -13,7 +13,7 @@
     <artifactId>katalon</artifactId>
     <version>1.0.24-SNAPSHOT</version>
     <packaging>hpi</packaging>
-    <name>Katalon Studio Plugin</name>
+    <name>Katalon TestOps Plugin</name>
     <description>Execute Katalon Studio in Jenkins</description>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Katalon+Plugin</url>
 
