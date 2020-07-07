@@ -6,6 +6,12 @@ Katalon Studio will be downloaded and deployed automatically.
 > For Jenkins Pipeline, please use the official Docker image for Katalon Studio.
 > Sample Jenkinsfile can be found [here](https://github.com/katalon-studio-samples/ci-samples/blob/master/Jenkinsfile).
 
+## Tutorials
+
+[https://forum.katalon.com/t/how-to-use-katalon-plugin-for-jenkins-on-windows/20326](How to use Katalon plugin for Jenkins on Windows).
+
+[https://forum.katalon.com/t/run-katalon-studio-tests-with-jenkins-on-a-headless-ubuntu-machine/17790](How to use Katalon plugin for Jenkins on Ubuntu).
+
 ## Usage
 
 * Install the plugin.
