@@ -1,6 +1,6 @@
 # Katalon TestOps Plugin for Jenkins
 
-> Katalon TestOps CI is the easier way to execute or schedule remote Katalon Studio executions. [https://docs.katalon.com/katalon-analytics/docs/kt-remote-execution.html">Learn more</a></div>
+> Katalon TestOps CI is the easier way to execute or schedule remote Katalon Studio executions. [https://docs.katalon.com/katalon-analytics/docs/kt-remote-execution.html](Learn more)
 
 Katalon TestOps Plugin for Jenkins helps execute Katalon Studio in Jenkins easily.
 Katalon Studio will be downloaded and deployed automatically.
