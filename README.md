@@ -1,6 +1,6 @@
 # Katalon Studio Plugin for Jenkins
 
-> Katalon Studio CI is the easier way to execute or schedule remote Katalon Studio executions. [Learn more](https://docs.katalon.com/katalon-analytics/docs/kt-remote-execution.html)
+> Katalon Testops CI is the easier way to execute or schedule remote Katalon Studio executions. [Learn more](https://docs.katalon.com/katalon-analytics/docs/kt-remote-execution.html)
 
 Katalon Studio Plugin for Jenkins helps execute Katalon Studio in Jenkins easily.
 Katalon Studio will be downloaded and deployed automatically.
