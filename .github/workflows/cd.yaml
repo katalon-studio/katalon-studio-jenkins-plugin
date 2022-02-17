@@ -2,12 +2,12 @@
 
 name: cd
 on:
-#   push:
-#     branches: master
-  workflow_dispatch:
-  check_run:
-    types:
-      - completed
+  push:
+    branches: master
+#   workflow_dispatch:
+#   check_run:
+#     types:
+#       - completed
 
 jobs:
   validate:
@@ -23,14 +23,16 @@ jobs:
           output_result: true
       - name: Check var   
         run: echo "aa - ${{ steps.verify-ci-status.outputs.result }}"
+      - name: Get Project Version from pom.xml
+        uses: entimaniac/read-pom-version-action@1.0.0
+        id: getVersion
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5
 #         if: steps.verify-ci-status.outputs.result == 'success'
-        if: steps.verify-ci-status.outputs.result == 'failed'
         with:
-          name: ne
-          tag: ne
-          version: ne
+          name: ${{ steps.getVersion.outputs.version }}
+          tag: ${{ steps.getVersion.outputs.version }}
+          version: ${{ steps.getVersion.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
