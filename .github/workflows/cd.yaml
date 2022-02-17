@@ -22,15 +22,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           output_result: true
       - name: Check var   
-        run: |
-          echo: "aa - ${{ steps.verify-ci-status.outputs.result }}"
+        run: echo "aa - ${{ steps.verify-ci-status.outputs.result }}"
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5
 #         if: steps.verify-ci-status.outputs.result == 'success'
+        if: steps.verify-ci-status.outputs.result == 'failed'
         with:
-          name: next
-          tag: next
-          version: next
+          name: ne
+          tag: ne
+          version: ne
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
