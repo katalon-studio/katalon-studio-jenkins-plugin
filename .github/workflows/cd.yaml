@@ -2,7 +2,9 @@
 
 name: cd
 on:
-  workflow_dispatch:
+  push:
+    branches: master
+#   workflow_dispatch:
 #   check_run:
 #     types:
 #       - completed
