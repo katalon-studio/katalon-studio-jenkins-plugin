@@ -2,10 +2,8 @@
 
 name: cd
 on:
-  workflow_dispatch:
-  check_run:
-    types:
-      - completed
+  push:
+    branches: master
 
 jobs:
   validate:
@@ -31,7 +29,7 @@ jobs:
         
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5
-        if: steps.verify-ci-status.outputs.result == 'success'
+#         if: steps.verify-ci-status.outputs.result == 'success'
         with:
           name: ${{ steps.getVersion.outputs.version }}
           tag: ${{ steps.getVersion.outputs.version }}
@@ -42,14 +40,14 @@ jobs:
       - name: Check interesting categories
         uses: jenkins-infra/interesting-category-action@v1.0.0
         id: interesting-categories
-        if: steps.verify-ci-status.outputs.result == 'success'
+#         if: steps.verify-ci-status.outputs.result == 'success'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     runs-on: ubuntu-latest
     needs: [validate]
-    if: needs.validate.outputs.should_release == 'true'
+#     if: needs.validate.outputs.should_release == 'true'
     steps:
     - name: Check out
       uses: actions/checkout@v2.4.0
