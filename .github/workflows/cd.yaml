@@ -58,6 +58,13 @@ jobs:
       with:
         distribution: temurin
         java-version: 8
+    - name: Check Secrets
+      env:
+        DEBUG_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        DEBUG_TOKEN: ${{ secrets.MAVEN_TOKEN }}
+      run: |
+        echo $DEBUG_USERNAME
+        echo $DEBUG_TOKEN
     - name: Release
       uses: jenkins-infra/jenkins-maven-cd-action@v1.2.0
       with:
