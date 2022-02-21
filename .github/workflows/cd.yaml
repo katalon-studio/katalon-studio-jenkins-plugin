@@ -2,9 +2,11 @@
 
 name: cd
 on:
-  push:
-    branches: master
-    
+  workflow_dispatch:
+  check_run:
+    types:
+      - completed
+
 jobs:
   validate:
     runs-on: ubuntu-latest
