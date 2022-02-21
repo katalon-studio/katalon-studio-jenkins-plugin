@@ -31,7 +31,7 @@ jobs:
         uses: release-drafter/release-drafter@v5
 #         if: steps.verify-ci-status.outputs.result == 'success'
         with:
-          name: ${{ steps.getVersion.outputs.version }}
+          name: next
           tag: ${{ steps.getVersion.outputs.version }}
           version: ${{ steps.getVersion.outputs.version }}
         env:
