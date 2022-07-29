@@ -6,7 +6,7 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <version>3.18</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.jenkins-ci.plugins</groupId>
@@ -27,7 +27,7 @@
              ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
         -->
         <junit.plugin.version>1.20</junit.plugin.version>
-        <jackson.version>2.9.5</jackson.version>
+        <jackson.version>2.12.3</jackson.version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
     </properties>
 
