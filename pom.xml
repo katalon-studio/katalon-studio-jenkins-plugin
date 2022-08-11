@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.18</version>
+        <version>3.56</version>
         <relativePath />
     </parent>
 
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>katalon</artifactId>
-    <version>1.0.30</version>
+    <version>1.0.31</version>
     <packaging>hpi</packaging>
     <name>Katalon Plugin</name>
     <description>Execute Katalon Studio in Jenkins</description>
@@ -27,10 +27,10 @@
              ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
         -->
         <junit.plugin.version>1.20</junit.plugin.version>
-        <jackson.version>2.9.5</jackson.version>
-        <commons-lang3.version>3.8.1</commons-lang3.version>
-        <utils.version>1.0.13</utils.version>
-        <httpclient.version>4.5.10</httpclient.version>
+        <jackson.version>2.13.13</jackson.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <utils.version>1.0.16</utils.version>
+        <httpclient.version>4.5.13</httpclient.version>
     </properties>
 
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
@@ -43,7 +43,7 @@
     </licenses>
 
     <organization>
-        <name>Katalon LLC.</name>
+        <name>Katalon Inc.</name>
         <url>https://www.katalon.com</url>
     </organization>
 
