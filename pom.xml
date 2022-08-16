@@ -11,7 +11,7 @@
 
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>katalon</artifactId>
-    <version>1.0.31</version>
+    <version>1.0.32</version>
     <packaging>hpi</packaging>
     <name>Katalon Plugin</name>
     <description>Execute Katalon Studio in Jenkins</description>
@@ -29,7 +29,7 @@
         <junit.plugin.version>1.20</junit.plugin.version>
         <jackson.version>2.13.13</jackson.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
-        <utils.version>1.0.16</utils.version>
+        <utils.version>1.0.17</utils.version>
         <httpclient.version>4.5.13</httpclient.version>
     </properties>
 
