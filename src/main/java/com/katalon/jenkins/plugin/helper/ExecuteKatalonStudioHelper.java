@@ -7,8 +7,7 @@ import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.TaskListener;
-import hudson.remoting.Callable;
-import org.jenkinsci.remoting.RoleChecker;
+import jenkins.security.MasterToSlaveCallable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class ExecuteKatalonStudioHelper {
             String xvfbConfiguration) {
         Logger logger = new JenkinsLogger(taskListener);
         try {
-            return launcher.getChannel().call(new Callable<Boolean, Exception>() {
+            return launcher.getChannel().call(new MasterToSlaveCallable<Boolean, Exception>() {
                 @Override
                 public Boolean call() throws Exception {
 
@@ -53,9 +52,6 @@ public class ExecuteKatalonStudioHelper {
                         }
                     }
                     return true;
-                }
-                @Override
-                public void checkRoles(RoleChecker roleChecker) throws SecurityException {
                 }
             });
         } catch (Exception e) {
