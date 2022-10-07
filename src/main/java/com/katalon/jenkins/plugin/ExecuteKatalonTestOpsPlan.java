@@ -180,7 +180,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
                                            @QueryParameter("credentialsId") final String credentialsId) {
       Jenkins.getActiveInstance().checkPermission(Item.CONFIGURE);
-      Jenkins.getActiveInstance().checkPermission(Item.EXTENDED_READ);
       
       if (url.isEmpty()) {
         return FormValidation.error("Please input server url.\n Example: https://testops.katalon.io");
@@ -212,7 +211,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
     public ListBoxModel doFillProjectIdItems(@QueryParameter("serverUrl") final String url,
                                              @QueryParameter("credentialsId") final String credentialsId) {
       Jenkins.getActiveInstance().checkPermission(Item.CONFIGURE);
-      Jenkins.getActiveInstance().checkPermission(Item.EXTENDED_READ);
       
       if (url.isEmpty()) {
         return new ListBoxModel();
@@ -250,7 +248,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
                                           @QueryParameter("credentialsId") final String credentialsId,
                                           @QueryParameter("projectId") final String projectId) {
       Jenkins.getActiveInstance().checkPermission(Item.CONFIGURE);
-      Jenkins.getActiveInstance().checkPermission(Item.EXTENDED_READ);
       
       if (url.isEmpty()) {
         return new ListBoxModel();
