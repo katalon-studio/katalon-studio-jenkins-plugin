@@ -178,8 +178,13 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
 
     @RequirePOST
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
-                                           @QueryParameter("credentialsId") final String credentialsId) {
-      Jenkins.getActiveInstance().checkPermission(Item.CONFIGURE);
+                                           @QueryParameter("credentialsId") final String credentialsId,
+                                           @AncestorInPath Item item) {
+      if (item == null) {
+        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+      } else {
+        item.checkPermission(Item.CONFIGURE);
+      }
       
       if (url.isEmpty()) {
         return FormValidation.error("Please input server url.\n Example: https://testops.katalon.io");
@@ -209,8 +214,13 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
 
     @RequirePOST
     public ListBoxModel doFillProjectIdItems(@QueryParameter("serverUrl") final String url,
-                                             @QueryParameter("credentialsId") final String credentialsId) {
-      Jenkins.getActiveInstance().checkPermission(Item.CONFIGURE);
+                                             @QueryParameter("credentialsId") final String credentialsId,
+                                             @AncestorInPath Item item) {
+      if (item == null) {
+        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+      } else {
+        item.checkPermission(Item.CONFIGURE);
+      }
       
       if (url.isEmpty()) {
         return new ListBoxModel();
@@ -245,10 +255,15 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
 
     @RequirePOST
     public ListBoxModel doFillPlanItems(@QueryParameter("serverUrl") final String url,
-                                          @QueryParameter("credentialsId") final String credentialsId,
-                                          @QueryParameter("projectId") final String projectId) {
-      Jenkins.getActiveInstance().checkPermission(Item.CONFIGURE);
-      
+                                        @QueryParameter("credentialsId") final String credentialsId,
+                                        @QueryParameter("projectId") final String projectId,
+                                        @AncestorInPath Item item) {
+      if (item == null) {
+        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+      } else {
+        item.checkPermission(Item.CONFIGURE);
+      }
+
       if (url.isEmpty()) {
         return new ListBoxModel();
       }
