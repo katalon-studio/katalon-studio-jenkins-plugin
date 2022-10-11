@@ -1,15 +1,14 @@
 package com.katalon.jenkins.plugin;
 
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
-import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.katalon.jenkins.plugin.entity.Plan;
 import com.katalon.jenkins.plugin.entity.Project;
 import com.katalon.jenkins.plugin.helper.KatalonTestOpsHelper;
 import com.katalon.jenkins.plugin.helper.KatalonTestOpsSearchHelper;
 import com.katalon.jenkins.plugin.helper.JenkinsLogger;
+import com.katalon.jenkins.plugin.helper.SecurityHelper;
 import com.katalon.utils.Logger;
 import hudson.Extension;
 import hudson.FilePath;
@@ -23,6 +22,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
@@ -34,15 +34,11 @@ import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildStep {
 
   private String credentialsId;
-
-  private String apiKey;
 
   private String plan;
 
@@ -53,7 +49,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
   @DataBoundConstructor
   public ExecuteKatalonTestOpsPlan(
       String credentialsId,
-      String apiKey,
       String serverUrl,
       String projectId,
       String planId) {
@@ -69,7 +64,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       this.serverUrl = serverUrl;
     }
     this.credentialsId = credentialsId;
-    this.apiKey = apiKey;
     this.plan = planId;
     this.projectId = projectId;
   }
@@ -80,14 +74,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
 
   public void setCredentialsId(String credentialsId) {
     this.credentialsId = credentialsId;
-  }
-
-  public String getApiKey() {
-    return apiKey;
-  }
-
-  public void setApiKey(String credentialsId) {
-    this.apiKey = credentialsId;
   }
 
   public String getServerUrl() {
@@ -128,7 +114,8 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
   private boolean doPerform(TaskListener taskListener) {
     Logger logger = new JenkinsLogger(taskListener);
     KatalonTestOpsHelper katalonAnalyticsHandler = new KatalonTestOpsHelper(logger);
-    return katalonAnalyticsHandler.run(serverUrl, apiKey, plan, projectId);
+    Secret apiKey = SecurityHelper.getApiKey(credentialsId);
+    return katalonAnalyticsHandler.run(serverUrl, apiKey.getPlainText(), plan, projectId);
   }
 
   @Override
@@ -162,21 +149,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       return super.configure(req, formData);
     }
 
-    private String getApiKey(String credentialsId) {
-      if (credentialsId == null) {
-        return null;
-      }
-      List<StringCredentials> creds = CredentialsProvider.lookupCredentials(StringCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.<DomainRequirement>emptyList());
-      StringCredentials credentials = null;
-      for (StringCredentials c : creds) {
-        if (credentialsId.matches(c.getId())) {
-          credentials = c;
-        }
-      }
-      return credentials == null ? null : credentials.getSecret().getPlainText();
-    }
-
-    @RequirePOST
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
                                            @QueryParameter("credentialsId") final String credentialsId,
                                            @AncestorInPath Item item) {
@@ -185,7 +157,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       } else {
         item.checkPermission(Item.CONFIGURE);
       }
-      
+
       if (url.isEmpty()) {
         return FormValidation.error("Please input server url.\n Example: https://testops.katalon.io");
       }
@@ -194,14 +166,14 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
         return FormValidation.error("Please select credentials.");
       }
 
-      String apiKey = getApiKey(credentialsId);
+      Secret apiKey = SecurityHelper.getApiKey(credentialsId);
       if (apiKey == null) {
         return FormValidation.error("Cannot get API key.");
       }
 
       try {
         KatalonTestOpsHelper katalonTestOpsHelper = new KatalonTestOpsHelper();
-        String token = katalonTestOpsHelper.requestToken(url, apiKey);
+        String token = katalonTestOpsHelper.requestToken(url, apiKey.getPlainText());
         if (token != null) {
           return FormValidation.ok("Success!");
         } else {
@@ -221,7 +193,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       } else {
         item.checkPermission(Item.CONFIGURE);
       }
-      
+
       if (url.isEmpty()) {
         return new ListBoxModel();
       }
@@ -231,11 +203,11 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       }
 
       ListBoxModel options = new ListBoxModel();
-      String apiKey = getApiKey(credentialsId);
+      Secret apiKey = SecurityHelper.getApiKey(credentialsId);
       if (apiKey != null) {
         KatalonTestOpsHelper katalonTestOpsHelper = new KatalonTestOpsHelper();
         try {
-          String token = katalonTestOpsHelper.requestToken(url, apiKey);
+          String token = katalonTestOpsHelper.requestToken(url, apiKey.getPlainText());
           if (token != null) {
             KatalonTestOpsSearchHelper katalonTestOpsSearchHelper = new KatalonTestOpsSearchHelper();
             Project[] projects = katalonTestOpsSearchHelper.getProjects(token, url);
@@ -276,7 +248,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
         return new ListBoxModel();
       }
 
-      String apiKey = getApiKey(credentialsId);
+      Secret apiKey = SecurityHelper.getApiKey(credentialsId);
       if (apiKey == null) {
         return new ListBoxModel();
       }
@@ -284,7 +256,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       ListBoxModel options = new ListBoxModel();
       KatalonTestOpsHelper katalonTestOpsHelper = new KatalonTestOpsHelper();
       try {
-        String token = katalonTestOpsHelper.requestToken(url, apiKey);
+        String token = katalonTestOpsHelper.requestToken(url, apiKey.getPlainText());
         if (token != null) {
           KatalonTestOpsSearchHelper katalonTestOpsSearchHelper = new KatalonTestOpsSearchHelper();
           Plan[] plans = katalonTestOpsSearchHelper.getPlan(token, url, projectId);
@@ -350,10 +322,8 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
     @Override
     public Builder newInstance(StaplerRequest req, JSONObject formData) throws FormException {
       String credentialsId = formData.getString("credentialsId");
-      String apiKey = getApiKey(credentialsId);
       return new ExecuteKatalonTestOpsPlan(
           credentialsId,
-          apiKey,
           formData.getString("serverUrl"),
           formData.getString("projectId"),
           formData.getString("plan"));
