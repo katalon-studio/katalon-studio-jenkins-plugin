@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -149,9 +150,16 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
     }
 
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
-                                           @QueryParameter("credentialsId") final String credentialsId) {
+                                           @QueryParameter("credentialsId") final String credentialsId,
+                                           @AncestorInPath Item item) {
+      if (item == null) {
+        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+      } else {
+        item.checkPermission(Item.CONFIGURE);
+      }
+
       if (url.isEmpty()) {
-        return FormValidation.error("Please input server url.\n Example: https://analytics.katalon.com");
+        return FormValidation.error("Please input server url.\n Example: https://testops.katalon.io");
       }
 
       if (credentialsId.isEmpty()) {
@@ -176,8 +184,16 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       }
     }
 
+    @RequirePOST
     public ListBoxModel doFillProjectIdItems(@QueryParameter("serverUrl") final String url,
-                                             @QueryParameter("credentialsId") final String credentialsId) {
+                                             @QueryParameter("credentialsId") final String credentialsId,
+                                             @AncestorInPath Item item) {
+      if (item == null) {
+        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+      } else {
+        item.checkPermission(Item.CONFIGURE);
+      }
+
       if (url.isEmpty()) {
         return new ListBoxModel();
       }
@@ -209,9 +225,17 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       return options;
     }
 
+    @RequirePOST
     public ListBoxModel doFillPlanItems(@QueryParameter("serverUrl") final String url,
-                                          @QueryParameter("credentialsId") final String credentialsId,
-                                          @QueryParameter("projectId") final String projectId) {
+                                        @QueryParameter("credentialsId") final String credentialsId,
+                                        @QueryParameter("projectId") final String projectId,
+                                        @AncestorInPath Item item) {
+      if (item == null) {
+        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
+      } else {
+        item.checkPermission(Item.CONFIGURE);
+      }
+
       if (url.isEmpty()) {
         return new ListBoxModel();
       }
