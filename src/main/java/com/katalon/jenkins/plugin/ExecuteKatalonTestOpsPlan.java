@@ -149,6 +149,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildSte
       return super.configure(req, formData);
     }
 
+    @RequirePOST
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
                                            @QueryParameter("credentialsId") final String credentialsId,
                                            @AncestorInPath Item item) {
