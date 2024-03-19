@@ -18,6 +18,10 @@ Use the command `mvn clean hpi:run -Djetty.port=8090` to debug the plugin.
 
 See the instructions at https://wiki.jenkins.io/display/JENKINS/Plugin+tutorial.
 
+### Requisition
+
+Jenkins: 2.448
+
 ## Companion products
 
 ### Katalon TestOps
