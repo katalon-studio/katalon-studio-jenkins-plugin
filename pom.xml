@@ -5,20 +5,20 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.64</version>
+        <version>4.79</version>
         <relativePath />
     </parent>
 
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>katalon</artifactId>
-    <version>1.0.35</version>
+    <version>1.0.36</version>
     <packaging>hpi</packaging>
     <name>Katalon Plugin</name>
     <url>https://github.com/jenkinsci/katalon-plugin</url>
 
     <properties>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
-        <jenkins.version>2.361.4</jenkins.version>
+        <jenkins.version>2.448</jenkins.version>
         <java.level>17</java.level>
         <!-- Other properties you may want to use:
              ~ java.level: set to 6 if your jenkins.version <= 1.611 ~ jenkins-test-harness.version: Jenkins Test Harness version you use to test the plugin. For Jenkins version >= 1.580.1 use JTH 2.0 or higher.
@@ -26,9 +26,7 @@
              ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
         -->
         <junit.plugin.version>1.20</junit.plugin.version>
-        <jackson.version>2.13.13</jackson.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-        <utils.version>1.0.17</utils.version>
+        <utils.version>1.0.18</utils.version>
         <httpclient.version>4.5.13</httpclient.version>
     </properties>
 
