@@ -48,9 +48,9 @@
     </developers>
 
     <scm>
-      <connection>scm:git:git://github.com/katalon-studio/katalon-studio-jenkins-plugin.git</connection>
-      <developerConnection>scm:git:git@github.com:katalon-studio/katalon-studio-jenkins-plugin.git</developerConnection>
-      <url>https://github.com/katalon-studio/katalon-studio-jenkins-plugin.git</url>
+      <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+      <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+      <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
       <tag>HEAD</tag>
     </scm>
 
@@ -73,6 +73,10 @@
             <artifactId>junit</artifactId>
             <version>${junit.plugin.version}</version>
         </dependency>
+<!--         <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>jenkins-test-harness</artifactId>
+        </dependency> -->
         <dependency>
             <groupId>com.katalon</groupId>
             <artifactId>utils</artifactId>
