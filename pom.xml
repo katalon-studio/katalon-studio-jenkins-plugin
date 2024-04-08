@@ -45,6 +45,11 @@
     </organization>
 
     <developers>
+      <developer>
+        <id>thvu-katalon</id>
+        <name>Vu</name>
+        <email>vu.than@katalon.com</email>
+      </developer>
     </developers>
 
     <scm>
