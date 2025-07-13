@@ -88,7 +88,7 @@ public class ExecuteKatalonStudioTask extends Builder implements SimpleBuildStep
             throws InterruptedException, IOException {
 
         // Check for interruption before starting
-        if (Thread.currentThread().isInterrupted()) {
+        if (isInterrupted()) {
             buildListener.getLogger().println("Build was cancelled before Katalon execution started");
             throw new InterruptedException("Build was cancelled");
         }
@@ -104,7 +104,7 @@ public class ExecuteKatalonStudioTask extends Builder implements SimpleBuildStep
             throws InterruptedException, IOException {
 
         // Check for interruption before starting
-        if (Thread.currentThread().isInterrupted()) {
+        if (isInterrupted()) {
             taskListener.getLogger().println("Build was cancelled before Katalon execution started");
             throw new InterruptedException("Build was cancelled");
         }
@@ -152,5 +152,9 @@ public class ExecuteKatalonStudioTask extends Builder implements SimpleBuildStep
             save();
             return super.configure(req, formData);
         }
+    }
+
+    private static boolean isInterrupted() {
+        return Thread.currentThread().isInterrupted();
     }
 }
