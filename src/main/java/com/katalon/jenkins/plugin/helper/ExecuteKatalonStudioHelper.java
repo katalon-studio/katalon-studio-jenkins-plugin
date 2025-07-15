@@ -146,14 +146,6 @@ public class ExecuteKatalonStudioHelper {
                         // If we're interrupted while waiting, force stop
                         Thread.currentThread().interrupt();
                     }
-
-                    // If thread is still alive, we need to force terminate
-                    if (katalonThread.isAlive()) {
-                        logger.info("Katalon execution did not stop gracefully, attempting force termination");
-                        // Note: In a real implementation, you might need to kill the Katalon process
-                        // This would require access to the process ID from KatalonUtils
-                    }
-
                     throw new InterruptedException("Katalon execution was cancelled");
                 }
 
