@@ -11,7 +11,7 @@
 
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>katalon</artifactId>
-    <version>1.0.37</version>
+    <version>1.0.38</version>
     <packaging>hpi</packaging>
     <name>Katalon Plugin</name>
     <url>https://github.com/katalon-studio/katalon-studio-jenkins-plugin</url>
