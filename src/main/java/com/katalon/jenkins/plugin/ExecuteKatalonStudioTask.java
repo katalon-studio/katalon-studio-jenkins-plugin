@@ -85,7 +85,14 @@ public class ExecuteKatalonStudioTask extends Builder implements SimpleBuildStep
 
     @Override
     public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
-        throws InterruptedException, IOException {
+            throws InterruptedException, IOException {
+
+        // Check for interruption before starting
+        if (isInterrupted()) {
+            buildListener.getLogger().println("Build was cancelled before Katalon execution started");
+            throw new InterruptedException("Build was cancelled");
+        }
+
         FilePath workspace = abstractBuild.getWorkspace();
         EnvVars buildEnvironment = abstractBuild.getEnvironment(buildListener);
         return doPerform(workspace, buildEnvironment, launcher, buildListener);
@@ -94,24 +101,37 @@ public class ExecuteKatalonStudioTask extends Builder implements SimpleBuildStep
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher,
                         @Nonnull TaskListener taskListener)
-        throws InterruptedException, IOException {
+            throws InterruptedException, IOException {
+
+        // Check for interruption before starting
+        if (isInterrupted()) {
+            taskListener.getLogger().println("Build was cancelled before Katalon execution started");
+            throw new InterruptedException("Build was cancelled");
+        }
+
         EnvVars buildEnvironment = run.getEnvironment(taskListener);
         doPerform(filePath, buildEnvironment, launcher, taskListener);
     }
 
     private boolean doPerform(FilePath workspace, EnvVars buildEnvironment,
                               Launcher launcher, TaskListener taskListener)
-        throws IOException, InterruptedException {
-        return ExecuteKatalonStudioHelper.executeKatalon(
-            workspace,
-            buildEnvironment,
-            launcher,
-            taskListener,
-            version,
-            location,
-            executeArgs,
-            x11Display,
-            xvfbConfiguration);
+            throws IOException, InterruptedException {
+
+        try {
+            return ExecuteKatalonStudioHelper.executeKatalon(
+                    workspace,
+                    buildEnvironment,
+                    launcher,
+                    taskListener,
+                    version,
+                    location,
+                    executeArgs,
+                    x11Display,
+                    xvfbConfiguration);
+        } catch (InterruptedException e) {
+            taskListener.getLogger().println("Katalon execution was interrupted due to build cancellation");
+            throw e; // Re-throw to ensure proper build status
+        }
     }
 
     @Symbol("executeKatalon")
@@ -132,5 +152,9 @@ public class ExecuteKatalonStudioTask extends Builder implements SimpleBuildStep
             save();
             return super.configure(req, formData);
         }
+    }
+
+    private static boolean isInterrupted() {
+        return Thread.currentThread().isInterrupted();
     }
 }
