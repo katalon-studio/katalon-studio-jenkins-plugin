@@ -13,7 +13,6 @@ import jenkins.security.MasterToSlaveCallable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ExecuteKatalonStudioHelper {
 
@@ -57,7 +56,6 @@ public class ExecuteKatalonStudioHelper {
         private final String x11Display;
         private final String xvfbConfiguration;
         private final AtomicBoolean cancelled = new AtomicBoolean(false);
-        private final AtomicReference<Process> currentProcess = new AtomicReference<>();
 
         public InterruptibleKatalonCallable(TaskListener taskListener, FilePath workspace,
                 EnvVars buildEnvironment, Logger logger, String version, String location,
@@ -120,11 +118,9 @@ public class ExecuteKatalonStudioHelper {
             // Create a thread to run Katalon execution
             final Exception[] executionException = new Exception[1];
             final Boolean[] result = new Boolean[1];
-            final AtomicBoolean katalonStarted = new AtomicBoolean(false);
 
             Thread katalonThread = new Thread(() -> {
                 try {
-                    katalonStarted.set(true);
                     result[0] = KatalonUtils.executeKatalon(
                             logger, version, location, workspaceLocation,
                             executeArgs, x11Display, xvfbConfiguration, environmentVariables);
@@ -153,12 +149,6 @@ public class ExecuteKatalonStudioHelper {
                         // If we're interrupted while waiting, force stop
                         Thread.currentThread().interrupt();
                     }
-
-                    // If thread is still alive, force stop it
-                    if (katalonThread.isAlive()) {
-                        logger.info("Katalon thread didn't stop gracefully, forcing termination");
-                        katalonThread.stop(); // Deprecated but necessary for force stop
-                    }
                     throw new InterruptedException("Katalon execution was forcibly cancelled");
                 }
 
@@ -184,25 +174,12 @@ public class ExecuteKatalonStudioHelper {
 
                 if (os.contains("win")) {
                     // Windows - kill Katalon processes
-                    logger.info("Attempting to kill Katalon processes on Windows");
-                    executeCommand(new String[] { "taskkill", "/F", "/IM", "katalon.exe" }, logger);
                     executeCommand(new String[] { "taskkill", "/F", "/IM", "katalonc.exe" }, logger);
-                    executeCommand(new String[] { "taskkill", "/F", "/IM", "java.exe" }, logger);
-                    // Kill any Chrome/Firefox processes that might be spawned by Katalon
-                    executeCommand(new String[] { "taskkill", "/F", "/IM", "chrome.exe" }, logger);
-                    executeCommand(new String[] { "taskkill", "/F", "/IM", "firefox.exe" }, logger);
                 } else {
                     // Linux/Unix - kill Katalon processes
-                    logger.info("Attempting to kill Katalon processes on Unix/Linux");
-                    executeCommand(new String[] { "pkill", "-f", "katalon" }, logger);
                     executeCommand(new String[] { "pkill", "-f", "katalonc" }, logger);
                     executeCommand(new String[] { "pkill", "-f", "Katalon_Studio_Engine" }, logger);
-                    // Kill any Chrome/Firefox processes that might be spawned by Katalon
-                    executeCommand(new String[] { "pkill", "-f", "chrome" }, logger);
-                    executeCommand(new String[] { "pkill", "-f", "firefox" }, logger);
-                    executeCommand(new String[] { "pkill", "-f", "chromium" }, logger);
                     // Force kill if regular kill doesn't work
-                    executeCommand(new String[] { "pkill", "-9", "-f", "katalon" }, logger);
                     executeCommand(new String[] { "pkill", "-9", "-f", "katalonc" }, logger);
                 }
             } catch (Exception e) {
@@ -216,9 +193,6 @@ public class ExecuteKatalonStudioHelper {
                 pb.redirectErrorStream(true);
                 Process process = pb.start();
 
-                // Store the process reference for potential cleanup
-                currentProcess.set(process);
-
                 // Wait for command to complete (with timeout)
                 boolean finished = process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS);
 
@@ -230,8 +204,6 @@ public class ExecuteKatalonStudioHelper {
                     logger.info("Force stop command completed with exit code " + exitCode + ": "
                             + String.join(" ", command));
                 }
-                currentProcess.set(null);
-
             } catch (Exception e) {
                 logger.info(
                         "Failed to execute force stop command: " + String.join(" ", command) + " - " + e.getMessage());
