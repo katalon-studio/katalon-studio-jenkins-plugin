@@ -178,7 +178,6 @@ public class ExecuteKatalonStudioHelper {
                 } else {
                     // Linux/Unix - kill Katalon processes
                     executeCommand(new String[] { "pkill", "-f", "katalonc" }, logger);
-                    executeCommand(new String[] { "pkill", "-f", "Katalon_Studio_Engine" }, logger);
                     // Force kill if regular kill doesn't work
                     executeCommand(new String[] { "pkill", "-9", "-f", "katalonc" }, logger);
                 }
