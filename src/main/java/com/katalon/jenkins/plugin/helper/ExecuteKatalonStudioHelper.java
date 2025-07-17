@@ -58,8 +58,8 @@ public class ExecuteKatalonStudioHelper {
         private final AtomicBoolean cancelled = new AtomicBoolean(false);
 
         public InterruptibleKatalonCallable(TaskListener taskListener, FilePath workspace,
-                                            EnvVars buildEnvironment, Logger logger, String version, String location,
-                                            String executeArgs, String x11Display, String xvfbConfiguration) {
+                EnvVars buildEnvironment, Logger logger, String version, String location,
+                String executeArgs, String x11Display, String xvfbConfiguration) {
             this.taskListener = taskListener;
             this.workspace = workspace;
             this.buildEnvironment = buildEnvironment;
@@ -134,35 +134,79 @@ public class ExecuteKatalonStudioHelper {
             // Monitor for interruption while Katalon is running
             while (katalonThread.isAlive()) {
                 if (Thread.currentThread().isInterrupted()) {
-                    logger.info("Build cancellation detected, interrupting Katalon execution");
+                    logger.info("Build cancellation detected, force stopping Katalon execution");
+
+                    // Force kill Katalon processes
+                    forceStopKatalonProcesses(logger);
 
                     // Interrupt the Katalon thread
                     katalonThread.interrupt();
 
                     // Wait a bit for graceful shutdown
                     try {
-                        katalonThread.join(5000); // Wait up to 5 seconds
+                        katalonThread.join(3000); // Wait up to 3 seconds
                     } catch (InterruptedException ie) {
                         // If we're interrupted while waiting, force stop
                         Thread.currentThread().interrupt();
                     }
-                    throw new InterruptedException("Katalon execution was cancelled");
+                    throw new InterruptedException("Katalon execution was forcibly cancelled");
                 }
 
                 try {
-                    Thread.sleep(1000); // Check every second
+                    Thread.sleep(500); // Check every 0.5 seconds for faster response
                 } catch (InterruptedException e) {
-                    // If interrupted while sleeping, interrupt Katalon and exit
+                    // If interrupted while sleeping, force stop Katalon and exit
+                    forceStopKatalonProcesses(logger);
                     katalonThread.interrupt();
                     throw e;
                 }
             }
-
             // Check if there was an exception during execution
             if (executionException[0] != null) {
                 throw executionException[0];
             }
             return result[0] != null ? result[0] : false;
+        }
+
+        private void forceStopKatalonProcesses(Logger logger) {
+            try {
+                String os = System.getProperty("os.name").toLowerCase();
+
+                if (os.contains("win")) {
+                    // Windows - kill Katalon processes
+                    executeCommand(new String[] { "taskkill", "/F", "/IM", "katalonc.exe" }, logger);
+                } else {
+                    // Linux/Unix - kill Katalon processes
+                    executeCommand(new String[] { "pkill", "-f", "katalonc" }, logger);
+                    // Force kill if regular kill doesn't work
+                    executeCommand(new String[] { "pkill", "-9", "-f", "katalonc" }, logger);
+                }
+            } catch (Exception e) {
+                logger.info("Error while trying to force stop Katalon processes: " + e.getMessage());
+            }
+        }
+
+        private void executeCommand(String[] command, Logger logger) {
+            try {
+                ProcessBuilder pb = new ProcessBuilder(command);
+                pb.redirectErrorStream(true);
+                Process process = pb.start();
+
+                // Wait for command to complete (with timeout)
+                boolean finished = process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS);
+
+                if (!finished) {
+                    logger.info("Force stop command timed out: " + String.join(" ", command));
+                    process.destroyForcibly();
+                } else {
+                    int exitCode = process.exitValue();
+                    logger.info("Force stop command completed with exit code " + exitCode + ": "
+                            + String.join(" ", command));
+                }
+            } catch (Exception e) {
+                logger.info(
+                        "Failed to execute force stop command: " + String.join(" ", command) + " - " + e.getMessage());
+            }
         }
     }
 }
